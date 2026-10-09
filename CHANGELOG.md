@@ -2,6 +2,12 @@
 
 All notable changes to pin-mods. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-10-09
+
+### Changed
+
+- Each mod's manifest now declares the MIT licence, matching the `LICENSE` file, so a tool reading the manifest knows it. Versions bumped because Claude Code only picks up a change when the version changes.
+
 ## [0.1.0] - 2026-10-09
 
 ### Added

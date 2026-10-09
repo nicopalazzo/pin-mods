@@ -1,7 +1,10 @@
 {
   "name": "pin-ask",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Plan C test: ask Claude to pin a short checklist above the prompt. Claude picks the lines; you tick them off.",
-  "author": { "name": "Nicolas Palazzo" },
+  "author": {
+    "name": "Nicolas Palazzo"
+  },
+  "license": "MIT",
   "types": "./types/index.d.ts"
 }
