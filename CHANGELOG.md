@@ -2,6 +2,12 @@
 
 All notable changes to pin-mods. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-09
+
+### Fixed
+
+- `pin`: `/pin 1. a 2. b 3. c` now shows three lines, not one long line. It splits only where the numbers count up from 1 in order, so ordinary sentences with numbers stay whole. Only the `pin` mod is bumped.
+
 ## [0.1.1] - 2026-10-09
 
 ### Changed

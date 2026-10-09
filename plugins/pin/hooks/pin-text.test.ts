@@ -1,6 +1,13 @@
 import { expect, test } from 'claude-code/testing'
 
-import { linesFromText, linesToPin, visibleLines } from './pin-text'
+import {
+  layoutLines,
+  linesFromText,
+  linesToPin,
+  splitInlineSteps,
+  splitMarker,
+  visibleLines,
+} from './pin-text'
 
 test('pins the numbered steps of an answer, cleaned of markdown', () => {
   const answer = 'Here is the plan:\n\n1. **Write** the file\n2. Run `tests`\n3. Commit\n\nDone.'
@@ -23,8 +30,6 @@ test('shows three lines when closed and all of them when open', () => {
   expect(visibleLines(lines, true)).toEqual(lines)
 })
 
-import { layoutLines, splitMarker } from './pin-text'
-
 test('splits a list marker so wrapped rows line up under the text', () => {
   expect(splitMarker('1. Write the file')).toEqual({ marker: '1.', body: 'Write the file' })
   expect(splitMarker('- a point')).toEqual({ marker: '-', body: 'a point' })
@@ -44,4 +49,20 @@ test('cuts a single very long line with an ellipsis instead of showing nothing',
 
   expect(shown.length).toBe(1)
   expect(shown[0]?.endsWith('…')).toBe(true)
+})
+
+test('splits numbered steps typed on one line, in order from 1', () => {
+  expect(splitInlineSteps('1. Open the report 2. Read the number 3. Write a question')).toEqual([
+    '1. Open the report',
+    '2. Read the number',
+    '3. Write a question',
+  ])
+  expect(linesFromText('1) a 2) b')).toEqual(['1) a', '2) b'])
+})
+
+test('leaves ordinary sentences with numbers alone', () => {
+  expect(splitInlineSteps('Meet at 5. Then go home')).toEqual(['Meet at 5. Then go home'])
+  expect(splitInlineSteps('In 2026. 5 apples were sold')).toEqual(['In 2026. 5 apples were sold'])
+  expect(splitInlineSteps('1. only one step')).toEqual(['1. only one step'])
+  expect(splitInlineSteps('Note: 1. first 2. second')).toEqual(['Note: 1. first 2. second'])
 })

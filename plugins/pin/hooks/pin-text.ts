@@ -23,10 +23,35 @@ export function linesToPin(answer: string): string[] {
   return picked.map(line => (line.length > MAX_WIDTH ? `${line.slice(0, MAX_WIDTH - 1)}…` : line))
 }
 
-/** Lines of text the person typed after /pin. */
+/**
+ * Split steps typed on one line ("1. a 2. b 3. c") into one line each. It splits only where the numbers
+ * count up from 1 in order, so "Meet at 5. Then go home" and "in 2026. 5 apples" stay whole.
+ */
+export function splitInlineSteps(line: string): string[] {
+  const marker = /(^|\s)(\d{1,2})[.)]\s+/g
+  const starts: number[] = []
+  let expected = 1
+  let m: RegExpExecArray | null
+
+  while ((m = marker.exec(line)) !== null) {
+    if (Number(m[2]) === expected) {
+      starts.push(m.index + (m[1] ?? '').length)
+      expected += 1
+    }
+  }
+
+  if (starts.length < 2 || starts[0] !== 0) {
+    return [line]
+  }
+
+  return starts.map((start, i) => line.slice(start, starts[i + 1] ?? line.length).trim())
+}
+
+/** Lines of text the person typed after /pin: one per line break, and one per numbered step typed inline. */
 export function linesFromText(text: string): string[] {
   return text
     .split('\n')
+    .flatMap(line => splitInlineSteps(line.trim()))
     .map(clean)
     .filter(line => line.length > 0)
     .slice(0, MAX_LINES)
