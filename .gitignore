@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Files Claude Code generates next to a mod while it is loaded
+.claude-plugin/types/
+tsconfig.json
+
+# Dependencies and logs
+node_modules/
+*.log
+
+# Secrets: never commit these
+.env
+.env.*
