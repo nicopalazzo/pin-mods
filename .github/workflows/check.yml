@@ -1,0 +1,23 @@
+name: check
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Manifests, versions, licence and marketplace
+        run: python3 scripts/check_repo.py
+      - name: Scan for secrets
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files --show-diff-on-failure
