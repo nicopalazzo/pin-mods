@@ -1,12 +1,21 @@
 # pin-mods
 
-Long Claude Code chats bury the steps you're meant to follow. pin-click adds a 📌 Pin steps button under any reply that has steps.
+I work with Claude Code on several projects at once. Claude often ends a reply with steps for me: run this, open that, check this. I'd start on step 1, ask a question, and three replies later the steps were gone. I scrolled up to find them, lost my place, and sometimes skipped one.
+
+I wanted the steps to stay in front of me while the chat kept going. Claude Code didn't have that, so I built it.
 
 ![A reply with four steps and the Pin steps button under it](docs/pin-click-button.png)
 
 One click keeps them above the prompt while the chat scrolls:
 
 ![The pinned steps in a band above the prompt](docs/pin-click-band.png)
+
+## How it went
+
+- I tried Codex first. I got a working demo in a browser, but Codex had no safe place to add it, so it stayed a demo.
+- Claude Code lets a mod draw above the prompt. On 9 Oct I built three versions: a command (`/pin`), a button under replies (pin-click), and a checklist Claude pins when you ask (pin-ask).
+- The button is the one I use. A command is one more thing to remember; the button is just there.
+- On 13 Oct the button was missing under a reply where Claude put the plan in a table. Now a table counts too, when the reply ends with a call to action.
 
 Everything stays in your session, on your computer. Nothing is sent anywhere.
 
