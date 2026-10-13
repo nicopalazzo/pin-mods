@@ -2,6 +2,12 @@
 
 All notable changes to pin-mods. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.3] - 2026-10-13
+
+### Changed
+
+- `pin-click`: a reply whose steps are in a table now gets the "Pin steps" button, but only when a call to action (❓, 🎯, 📍, ✍️, "Your turn", "Your call", "Next") comes after the table. A table you only read stays without a button. Each row is pinned as "first cell → other cells". Only the `pin-click` mod is bumped.
+
 ## [0.1.2] - 2026-10-09
 
 ### Fixed

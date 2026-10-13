@@ -11,11 +11,45 @@ function clean(line: string): string {
     .trim()
 }
 
-/** Pick what to pin from an answer: its numbered or bulleted steps if it has at least two, else its first lines. */
-export function linesToPin(answer: string): string[] {
+const TABLE_ROW = /^\s*\|.*\|\s*$/
+const TABLE_RULE = /^\s*\|[\s:|-]+\|\s*$/
+const CALL_TO_ACTION = /❓|🎯|📍|✍️|\byour (turn|call|pick)\b|\bnext\b/i
+
+/**
+ * Body rows of the last table, as "first cell → other cells", but only when a call to action
+ * (❓, 🎯, "Your turn", "Next"…) comes after it: a table you must act on, not one to read.
+ */
+function tableSteps(lines: string[]): string[] {
+  const lastRow = lines.findLastIndex(line => TABLE_ROW.test(line))
+
+  if (lastRow === -1 || !lines.slice(lastRow + 1).some(line => CALL_TO_ACTION.test(line))) {
+    return []
+  }
+
+  let first = lastRow
+  while (first > 0 && TABLE_ROW.test(lines[first - 1] ?? '')) first--
+
+  const rows = lines.slice(first, lastRow + 1)
+  const body = rows.length >= 2 && TABLE_RULE.test(rows[1] ?? '') ? rows.slice(2) : rows
+
+  return body
+    .map(row => row.trim().replace(/^\||\|$/g, '').split('|').map(clean).filter(cell => cell.length > 0))
+    .filter(cells => cells.length > 0)
+    .map(([head, ...rest]) => (rest.length > 0 ? `${head} → ${rest.join(' · ')}` : (head ?? '')))
+}
+
+/** Numbered or bulleted steps if there are at least two, else the rows of a table followed by a call to action. */
+function stepLines(answer: string): string[] {
   const all = answer.split('\n')
   const steps = all.filter(line => STEP.test(line))
-  const picked = (steps.length >= 2 ? steps : all)
+
+  return steps.length >= 2 ? steps : tableSteps(all)
+}
+
+/** Pick what to pin from an answer: its steps (list or actionable table) if it has at least two, else its first lines. */
+export function linesToPin(answer: string): string[] {
+  const steps = stepLines(answer)
+  const picked = (steps.length >= 2 ? steps : answer.split('\n'))
     .map(clean)
     .filter(line => line.length > 0)
     .slice(0, MAX_LINES)
@@ -37,9 +71,9 @@ export function visibleLines(lines: string[], isOpen: boolean, closedCount = 3):
   return isOpen ? lines : lines.slice(0, closedCount)
 }
 
-/** True when an answer has at least two numbered or bulleted steps. */
+/** True when an answer has at least two steps: list lines, or table rows followed by a call to action. */
 export function hasSteps(answer: string): boolean {
-  return answer.split('\n').filter(line => STEP.test(line)).length >= 2
+  return stepLines(answer).length >= 2
 }
 
 const MARKER = /^(\d+[.)]|[-*•])\s+(.*)$/

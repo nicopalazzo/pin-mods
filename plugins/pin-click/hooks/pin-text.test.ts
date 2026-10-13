@@ -59,3 +59,31 @@ test('keeps a short original whole and cuts a very long one with an ellipsis', (
   expect(cut.length).toBe(50)
   expect(cut.endsWith('…')).toBe(true)
 })
+
+const ACTION_TABLE = [
+  '| Section | Mode |',
+  '|---|---|',
+  '| **Voice-heavy** | You write, I give feedback |',
+  '| Fact-heavy | I fix facts, you tune |',
+  '',
+  '❓ **Your call:** use this split?',
+].join('\n')
+
+test('a table followed by a call to action gets a Pin button, one line per row', () => {
+  expect(hasSteps(ACTION_TABLE)).toBe(true)
+  expect(linesToPin(ACTION_TABLE)).toEqual([
+    'Voice-heavy → You write, I give feedback',
+    'Fact-heavy → I fix facts, you tune',
+  ])
+})
+
+test('a table with no call to action after it stays a table to read', () => {
+  const reference = ['| | A | B |', '|---|---|---|', '| Trigger | auto | asked |', '| Where | reply | tool |'].join('\n')
+
+  expect(hasSteps(reference)).toBe(false)
+  expect(hasSteps(`🎯 Next: compare them\n\n${reference}`)).toBe(false)
+})
+
+test('list steps still win over a table', () => {
+  expect(linesToPin(`- one\n- two\n\n${ACTION_TABLE}`)).toEqual(['- one', '- two'])
+})
