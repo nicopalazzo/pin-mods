@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Checklist } from '../types'
-import { layoutLines, progress, toItems, toTitle, toggle } from './checklist'
+import { progress, toItems, toTitle, toggle } from './checklist'
 
 const checklist = atom({ plugin: 'pin-ask', key: 'checklist' } as const, null)
 
@@ -61,10 +61,8 @@ export const register: Register = on => {
     }
 
     const { Box, Button, Text } = $.ui.resolve(e)
-    const budget = Math.max(3, (e.props.maxRows ?? 8) - 2)
-    const { shown } = layoutLines(list.items.map(item => item.text), e.props.bodyColumns, budget)
-    const shownCount = shown.length
 
+    // Draw every line: a tree taller than maxRows scrolls in the engine's own window.
     return (
       <Box flexDirection="column">
         <Box gap={1}>
@@ -73,7 +71,7 @@ export const register: Register = on => {
           </Text>
           <Button key="unpin" label="Unpin" onPress={() => update($, checklist, () => null)} />
         </Box>
-        {list.items.slice(0, shownCount).map((item, i) => (
+        {list.items.map((item, i) => (
           <Box key={`row-${i}`} gap={1}>
             <Button
               key={`item-${i}`}
@@ -86,7 +84,6 @@ export const register: Register = on => {
             </Box>
           </Box>
         ))}
-        {shownCount < list.items.length && <Text dimColor>… {list.items.length - shownCount} more</Text>}
       </Box>
     )
   })

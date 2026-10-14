@@ -2,6 +2,13 @@
 
 All notable changes to pin-mods. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.4] - 2026-10-14
+
+### Fixed
+
+- `pin`, `pin-click`: an opened band now shows every pinned line. It used to stop at the row budget, so "more" never revealed a long list. A list taller than the band now scrolls in Claude Code's own window. Bumped to `pin` 0.1.3 and `pin-click` 0.1.4.
+- `pin-ask`: the checklist shows every line rather than cutting at "… N more", so every line can be ticked off. Bumped to 0.1.2.
+
 ## [0.1.3] - 2026-10-13
 
 ### Changed

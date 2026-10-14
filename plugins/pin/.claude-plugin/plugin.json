@@ -1,6 +1,6 @@
 {
   "name": "pin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Keep a few lines of an answer pinned above the prompt while the chat scrolls. /pin, /unpin.",
   "types": "./types/index.d.ts",
   "author": {
