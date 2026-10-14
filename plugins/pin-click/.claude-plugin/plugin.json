@@ -1,6 +1,6 @@
 {
   "name": "pin-click",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Plan B test: a Pin button under every reply that has steps. Click it to keep the steps above the prompt.",
   "author": {
     "name": "Nicolas Palazzo"

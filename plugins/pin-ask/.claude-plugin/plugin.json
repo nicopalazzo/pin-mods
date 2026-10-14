@@ -1,6 +1,6 @@
 {
   "name": "pin-ask",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Plan C test: ask Claude to pin a short checklist above the prompt. Claude picks the lines; you tick them off.",
   "author": {
     "name": "Nicolas Palazzo"

@@ -83,7 +83,8 @@ export const register: Register = on => {
     const { Box, Button, Markdown, Text } = $.ui.resolve(e)
     const budget = Math.max(3, (e.props.maxRows ?? 8) - 2)
     const base = visibleLines(pin.lines, pin.isOpen)
-    const { shown } = layoutLines(base, e.props.bodyColumns, pin.isOpen ? budget : Math.min(budget, 6))
+    // Open: draw every line, so a list taller than the band scrolls in the engine's own window.
+    const shown = pin.isOpen ? base : layoutLines(base, e.props.bodyColumns, Math.min(budget, 6)).shown
     const hidden = pin.lines.length - shown.length
 
     return (
