@@ -1,6 +1,6 @@
 {
   "name": "pin",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Keep steps above the prompt while the chat scrolls: a Pin button under any reply, or /pin. Show the original reply, find it in the chat.",
   "types": "./types/index.d.ts",
   "author": {

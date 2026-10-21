@@ -3,10 +3,12 @@ import { expect, test } from 'claude-code/testing'
 import {
   capOriginal,
   explainScroll,
+  fromShelf,
   hasSteps,
   layoutLines,
   linesFromText,
   linesToPin,
+  refreshPrompt,
   searchPhrase,
   splitInlineSteps,
   shelfPrompt,
@@ -143,9 +145,26 @@ test('ticking a line adds it, ticking it again removes it, and the list stays so
   expect(toggleDone([0, 2], 2)).toEqual([0])
 })
 
-test('the shelf sentence marks ticked lines with [x] and the rest with [ ]', () => {
-  expect(shelfPrompt(['1. Book', '2. Invite'], [0])).toBe(
-    'Add these steps to the shelf (the [x] ones are already done):\n[x] 1. Book\n[ ] 2. Invite',
-  )
+test('the shelf sentence marks ticked lines with [x], the rest with [ ], and asks to link the pin', () => {
+  const text = shelfPrompt(['1. Book', '2. Invite'], [0])
+
+  expect(text).toContain('[x] 1. Book\n[ ] 2. Invite')
+  expect(text).toContain('pin_from_shelf')
   expect(shelfPrompt(['1. Book'], undefined)).toContain('[ ] 1. Book')
+})
+
+test('the refresh sentence names the shelf entry', () => {
+  expect(refreshPrompt('p-dinner')).toContain('p-dinner')
+})
+
+test('a shelf entry becomes numbered lines and the indexes of the done steps', () => {
+  const pin = fromShelf({ id: ' p-dinner ', steps: [{ text: 'Book **now**', done: true }, { text: 'Invite', done: false }, { text: '  ' }] })
+
+  expect(pin).toEqual({ shelfId: 'p-dinner', lines: ['1. Book now', '2. Invite'], done: [0] })
+})
+
+test('a shelf entry with no id or no steps gives nothing', () => {
+  expect(fromShelf({ steps: [{ text: 'a' }] })).toBeNull()
+  expect(fromShelf({ id: 'p-x', steps: [] })).toBeNull()
+  expect(fromShelf({ id: 'p-x', steps: 'nope' })).toBeNull()
 })

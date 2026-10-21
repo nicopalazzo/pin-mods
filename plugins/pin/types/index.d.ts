@@ -8,6 +8,8 @@ export type Pin = {
   showOriginal: boolean
   /** Indexes of the lines the person ticked off in the band. */
   done?: number[]
+  /** The Steps shelf entry this pin shows. Set by the pin_from_shelf tool; its ticks then come from the shelf. */
+  shelfId?: string
 }
 
 declare module 'claude-code' {

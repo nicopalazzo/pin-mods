@@ -5,10 +5,12 @@ import type { Pin } from '../types'
 import {
   capOriginal,
   explainScroll,
+  fromShelf,
   hasSteps,
   layoutLines,
   linesFromText,
   linesToPin,
+  refreshPrompt,
   searchPhrase,
   shelfPrompt,
   splitMarker,
@@ -19,7 +21,7 @@ import {
 const pinned = atom({ plugin: 'pin', key: 'pinned' } as const, null)
 const lastAnswer = atom({ plugin: 'pin', key: 'lastAnswer' } as const, '')
 
-const registerCommands = async ($: EngineInterface) => {
+const registerAll = async ($: EngineInterface) => {
   await $.command.register({
     name: 'pin',
     description: 'Pin the last answer (or the text you type) above the prompt',
@@ -32,11 +34,35 @@ const registerCommands = async ($: EngineInterface) => {
     name: 'pin-goto',
     description: 'Scroll back to the reply the pin came from',
   })
+  await $.tool.register({
+    name: 'pin_from_shelf',
+    description:
+      "Show a Steps shelf entry in the pin above the user's prompt, with each step's done state. " +
+      'Call it after you add steps to the shelf, and when the user asks to refresh the pin from the shelf. ' +
+      'Pass the entry id and ALL its steps in order. Calling it again replaces the pin.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', description: 'The shelf entry id, such as p-surprise-dinner' },
+        steps: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: { text: { type: 'string' }, done: { type: 'boolean' } },
+            required: ['text'],
+          },
+          description: 'All the entry steps in order',
+        },
+      },
+      required: ['id', 'steps'],
+    },
+    isDeferred: false,
+  })
 }
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await registerCommands($)
+    await registerAll($)
 
     return next(e)
   })
@@ -48,7 +74,7 @@ export const register: Register = on => {
     const result = await next(e)
 
     if ((await $.session.id()) !== session) {
-      await registerCommands($).catch(() => undefined)
+      await registerAll($).catch(() => undefined)
     }
 
     return result
@@ -57,7 +83,7 @@ export const register: Register = on => {
   // /clear fires session.end with reason 'clear' and no session.start after it.
   on('session.end', async ($, e, next) => {
     if (e.reason === 'clear') {
-      await registerCommands($).catch(() => undefined)
+      await registerAll($).catch(() => undefined)
     }
 
     return next(e)
@@ -71,6 +97,27 @@ export const register: Register = on => {
 
     return next(e)
   })
+
+  on('tool.call', { tool: 'mcp__pin__pin_from_shelf' }, async ($, e) => {
+    const shelf = fromShelf(e as { id?: unknown; steps?: unknown })
+
+    if (shelf === null) {
+      return { result: 'Nothing was pinned: the entry id or its steps were missing.' }
+    }
+
+    const fresh: Pin = {
+      lines: shelf.lines,
+      isOpen: true,
+      fromId: null,
+      original: '',
+      showOriginal: false,
+      done: shelf.done,
+      shelfId: shelf.shelfId,
+    }
+    await update($, pinned, () => fresh)
+
+    return { result: `The pin now shows shelf entry ${shelf.shelfId} (${shelf.done.length}/${shelf.lines.length} done).` }
+  }).catch(($, e, next) => next(e))
 
   on('command.run', { command: 'pin' }, async ($, e) => {
     const typed = e.args.trim()
@@ -167,7 +214,7 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         <Box gap={1}>
-          <Text bold>📌 Pinned</Text>
+          <Text bold>{pin.shelfId === undefined ? '📌 Pinned' : '📌 Pinned · on the shelf'}</Text>
           {!pin.showOriginal && (pin.isOpen || hidden > 0) && (
             <Button
               key="toggle"
@@ -210,8 +257,13 @@ export const register: Register = on => {
           )}
           <Button
             key="shelf"
-            label="➕ Shelf"
-            onPress={() => $.prompt.submit({ text: shelfPrompt(pin.lines, pin.done), asUser: true })}
+            label={pin.shelfId === undefined ? '➕ Shelf' : '↻ Shelf'}
+            onPress={() =>
+              $.prompt.submit({
+                text: pin.shelfId === undefined ? shelfPrompt(pin.lines, pin.done) : refreshPrompt(pin.shelfId),
+                asUser: true,
+              })
+            }
           />
           <Button key="unpin" label="Unpin" onPress={() => update($, pinned, () => null)} />
         </Box>
@@ -223,12 +275,16 @@ export const register: Register = on => {
 
             return (
               <Box key={`row-${i}`} gap={1}>
-                <Button
-                  key={`tick-${i}`}
-                  plain
-                  label={isDone ? '☑' : '☐'}
-                  onPress={() => update($, pinned, p => (p === null ? p : { ...p, done: toggleDone(p.done, i) }))}
-                />
+                {pin.shelfId === undefined ? (
+                  <Button
+                    key={`tick-${i}`}
+                    plain
+                    label={isDone ? '☑' : '☐'}
+                    onPress={() => update($, pinned, p => (p === null ? p : { ...p, done: toggleDone(p.done, i) }))}
+                  />
+                ) : (
+                  <Text>{isDone ? '☑' : '☐'}</Text>
+                )}
                 <Box flexShrink={1}>
                   <Text dimColor={isDone}>{marker ? `${marker} ${body}` : body}</Text>
                 </Box>

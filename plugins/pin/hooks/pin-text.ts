@@ -191,10 +191,39 @@ export function toggleDone(done: number[] | undefined, index: number): number[] 
   return [...set].sort((a, b) => a - b)
 }
 
-/** The sentence typed into the prompt to put a pin on the shelf: ticked lines start with [x], the rest with [ ]. */
+/** The sentence sent to put a pin on the shelf: ticked lines start with [x], the rest with [ ]. Claude then links the pin to the new entry. */
 export function shelfPrompt(lines: string[], done: number[] | undefined): string {
   const ticked = new Set(done ?? [])
   const rows = lines.map((line, i) => `${ticked.has(i) ? '[x]' : '[ ]'} ${line}`)
 
-  return `Add these steps to the shelf (the [x] ones are already done):\n${rows.join('\n')}`
+  return `Add these steps to the shelf (the [x] ones are already done), then call the pin_from_shelf tool with the new entry so the pin follows it:\n${rows.join('\n')}`
+}
+
+/** The sentence sent to refresh a shelf-linked pin: Claude reads the entry and calls the pin_from_shelf tool. */
+export function refreshPrompt(shelfId: string): string {
+  return `Refresh the pin from shelf entry ${shelfId}: read the entry from the shelf, then call the pin_from_shelf tool with its id and all its steps.`
+}
+
+export type ShelfPin = { shelfId: string; lines: string[]; done: number[] }
+
+/** Turn what Claude sent from a shelf entry into the pin's lines and ticks: numbered lines, done indexes. Null when there are no steps or no id. */
+export function fromShelf(input: { id?: unknown; steps?: unknown }): ShelfPin | null {
+  if (typeof input.id !== 'string' || input.id.trim() === '' || !Array.isArray(input.steps)) {
+    return null
+  }
+
+  const steps = input.steps
+    .map(step => step as { text?: unknown; done?: unknown })
+    .filter(step => typeof step.text === 'string' && step.text.trim() !== '')
+    .slice(0, MAX_LINES)
+
+  if (steps.length === 0) {
+    return null
+  }
+
+  return {
+    shelfId: input.id.trim(),
+    lines: steps.map((step, i) => `${i + 1}. ${clean(step.text as string).slice(0, MAX_WIDTH)}`),
+    done: steps.flatMap((step, i) => (step.done === true ? [i] : [])),
+  }
 }

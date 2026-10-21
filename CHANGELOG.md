@@ -6,6 +6,10 @@ All notable changes to pin-mods. The format follows [Keep a Changelog](https://k
 
 ### Added
 
+- `pin` 0.4.0: the shelf is the source of truth. A new tool, `pin_from_shelf`, lets Claude show a Steps shelf entry in the pin with its ticks. A shelf-linked pin says "on the shelf", its ticks are read-only, and its button becomes "↻ Shelf", which asks Claude to read the entry again and refresh the pin. The pin cannot read the shelf itself (it needs the person's sign-in), so it follows only when Claude refreshes it. The "➕ Shelf" button now also asks Claude to link the pin to the new entry.
+
+### Added
+
 - `pin` 0.3.0: tick lines off in the band (☐ / ☑), and a "➕ Shelf" button that types "Add these steps to the shelf" with the pinned lines into the prompt, ticked ones marked `[x]`. It needs the Steps shelf plugin; the pin does not read the shelf back, so a tick made on the shelf does not show on the pin.
 
 ### Changed
