@@ -2,6 +2,23 @@
 
 All notable changes to pin-mods. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `pin` 0.4.0: the shelf is the source of truth. A new tool, `pin_from_shelf`, lets Claude show a Steps shelf entry in the pin with its ticks. A shelf-linked pin says "on the shelf", its ticks are read-only, and its button becomes "↻ Shelf", which asks Claude to read the entry again and refresh the pin. The pin cannot read the shelf itself (it needs the person's sign-in), so it follows only when Claude refreshes it. The "➕ Shelf" button now also asks Claude to link the pin to the new entry.
+
+- `pin` 0.3.0: tick lines off in the band (☐ / ☑), and a "➕ Shelf" button that types "Add these steps to the shelf" with the pinned lines into the prompt, ticked ones marked `[x]`. It needs the Steps shelf plugin; the pin does not read the shelf back, so a tick made on the shelf does not show on the pin.
+
+### Changed
+
+- `pin` 0.2.0 now holds what `pin-click` did: the "📌 Pin steps" button under replies, "↩ Original", "🔎 Find in chat" and `/pin-goto`, plus step detection for tables. `/pin` keeps the original reply too, so "Original" works for it. It could only reach the last reply before; the button reaches any reply. `pin-click` is removed from the marketplace and from the repository; install `pin` instead.
+- Why: two plugins drew two different bands, and a user could not tell which to use.
+
+### Fixed
+
+- `pin`: `/pin` and `/unpin` are registered again after `/clear` or `/resume`. They were registered only at session start, so after `/clear` the app could answer "/pin isn't a command here". `pin-ask` has the same pattern, not yet fixed.
+
 ## [0.1.4] - 2026-10-14
 
 ### Fixed

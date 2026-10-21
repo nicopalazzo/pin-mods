@@ -13,7 +13,7 @@ Small experiments, kept tidy.
 Use [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): imperative summary`, 72 characters at most, no final period. The body explains why.
 
 - Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`.
-- Scopes: `pin`, `pin-click`, `pin-ask`, `marketplace`.
+- Scopes: `pin`, `pin-ask`, `marketplace`.
 - One logical change per commit.
 - Credit AI pair programming with a `Co-Authored-By` trailer.
 

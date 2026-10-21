@@ -1,11 +1,19 @@
 import { expect, test } from 'claude-code/testing'
 
 import {
+  capOriginal,
+  explainScroll,
+  fromShelf,
+  hasSteps,
   layoutLines,
   linesFromText,
   linesToPin,
+  refreshPrompt,
+  searchPhrase,
   splitInlineSteps,
+  shelfPrompt,
   splitMarker,
+  toggleDone,
   visibleLines,
 } from './pin-text'
 
@@ -65,4 +73,98 @@ test('leaves ordinary sentences with numbers alone', () => {
   expect(splitInlineSteps('In 2026. 5 apples were sold')).toEqual(['In 2026. 5 apples were sold'])
   expect(splitInlineSteps('1. only one step')).toEqual(['1. only one step'])
   expect(splitInlineSteps('Note: 1. first 2. second')).toEqual(['Note: 1. first 2. second'])
+})
+
+test('a reply with two or more steps gets a Pin button', () => {
+  expect(hasSteps('Plan:\n1. First\n2. Second')).toBe(true)
+  expect(hasSteps('Just a sentence.')).toBe(false)
+  expect(hasSteps('Only one:\n- item')).toBe(false)
+})
+
+test('pins the steps of the clicked reply, cleaned of markdown', () => {
+  expect(linesToPin('Plan:\n1. **Write** it\n2. Run `tests`')).toEqual(['1. Write it', '2. Run tests'])
+})
+
+
+test('says nothing when the jump back worked, and explains when it did not', () => {
+  expect(explainScroll(undefined)).toBe('')
+  expect(explainScroll('not person-initiated')).toContain('↩ Original')
+  expect(explainScroll('transcript not scrollable here')).toContain("doesn't let a plugin scroll")
+  expect(explainScroll('none scrolls')).toContain("doesn't let a plugin scroll")
+  expect(explainScroll('weird reason')).toBe("Couldn't jump back: weird reason")
+})
+
+test('the search phrase is the first pinned line without its marker, cut at a word', () => {
+  expect(searchPhrase(['1. Write the file'])).toBe('Write the file')
+  expect(searchPhrase(['- A very long first line that keeps going well past forty characters in total'])).toBe(
+    'A very long first line that keeps going',
+  )
+  expect(searchPhrase([])).toBe('')
+})
+
+test('keeps a short original whole and cuts a very long one with an ellipsis', () => {
+  expect(capOriginal('short reply')).toBe('short reply')
+
+  const cut = capOriginal('a'.repeat(100), 50)
+
+  expect(cut.length).toBe(50)
+  expect(cut.endsWith('…')).toBe(true)
+})
+
+const ACTION_TABLE = [
+  '| Section | Mode |',
+  '|---|---|',
+  '| **Voice-heavy** | You write, I give feedback |',
+  '| Fact-heavy | I fix facts, you tune |',
+  '',
+  '❓ **Your call:** use this split?',
+].join('\n')
+
+test('a table followed by a call to action gets a Pin button, one line per row', () => {
+  expect(hasSteps(ACTION_TABLE)).toBe(true)
+  expect(linesToPin(ACTION_TABLE)).toEqual([
+    'Voice-heavy → You write, I give feedback',
+    'Fact-heavy → I fix facts, you tune',
+  ])
+})
+
+test('a table with no call to action after it stays a table to read', () => {
+  const reference = ['| | A | B |', '|---|---|---|', '| Trigger | auto | asked |', '| Where | reply | tool |'].join('\n')
+
+  expect(hasSteps(reference)).toBe(false)
+  expect(hasSteps(`🎯 Next: compare them\n\n${reference}`)).toBe(false)
+})
+
+test('list steps still win over a table', () => {
+  expect(linesToPin(`- one\n- two\n\n${ACTION_TABLE}`)).toEqual(['- one', '- two'])
+})
+
+test('ticking a line adds it, ticking it again removes it, and the list stays sorted', () => {
+  expect(toggleDone(undefined, 2)).toEqual([2])
+  expect(toggleDone([2], 0)).toEqual([0, 2])
+  expect(toggleDone([0, 2], 2)).toEqual([0])
+})
+
+test('the shelf sentence marks ticked lines with [x], the rest with [ ], and asks to link the pin', () => {
+  const text = shelfPrompt(['1. Book', '2. Invite'], [0])
+
+  expect(text).toContain('[x] 1. Book\n[ ] 2. Invite')
+  expect(text).toContain('pin_from_shelf')
+  expect(shelfPrompt(['1. Book'], undefined)).toContain('[ ] 1. Book')
+})
+
+test('the refresh sentence names the shelf entry', () => {
+  expect(refreshPrompt('p-dinner')).toContain('p-dinner')
+})
+
+test('a shelf entry becomes numbered lines and the indexes of the done steps', () => {
+  const pin = fromShelf({ id: ' p-dinner ', steps: [{ text: 'Book **now**', done: true }, { text: 'Invite', done: false }, { text: '  ' }] })
+
+  expect(pin).toEqual({ shelfId: 'p-dinner', lines: ['1. Book now', '2. Invite'], done: [0] })
+})
+
+test('a shelf entry with no id or no steps gives nothing', () => {
+  expect(fromShelf({ steps: [{ text: 'a' }] })).toBeNull()
+  expect(fromShelf({ id: 'p-x', steps: [] })).toBeNull()
+  expect(fromShelf({ id: 'p-x', steps: 'nope' })).toBeNull()
 })
