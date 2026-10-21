@@ -177,3 +177,24 @@ const MAX_ORIGINAL = 8000
 export function capOriginal(text: string, max = MAX_ORIGINAL): string {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
+
+/** Tick or untick one line: the ticked indexes, sorted, with the line added or removed. */
+export function toggleDone(done: number[] | undefined, index: number): number[] {
+  const set = new Set(done ?? [])
+
+  if (set.has(index)) {
+    set.delete(index)
+  } else {
+    set.add(index)
+  }
+
+  return [...set].sort((a, b) => a - b)
+}
+
+/** The sentence typed into the prompt to put a pin on the shelf: ticked lines start with [x], the rest with [ ]. */
+export function shelfPrompt(lines: string[], done: number[] | undefined): string {
+  const ticked = new Set(done ?? [])
+  const rows = lines.map((line, i) => `${ticked.has(i) ? '[x]' : '[ ]'} ${line}`)
+
+  return `Add these steps to the shelf (the [x] ones are already done):\n${rows.join('\n')}`
+}

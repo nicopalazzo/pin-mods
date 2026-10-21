@@ -10,7 +10,9 @@ import {
   linesFromText,
   linesToPin,
   searchPhrase,
+  shelfPrompt,
   splitMarker,
+  toggleDone,
   visibleLines,
 } from './pin-text'
 
@@ -206,22 +208,31 @@ export const register: Register = on => {
               }}
             />
           )}
+          <Button
+            key="shelf"
+            label="➕ Shelf"
+            onPress={() => $.prompt.fill({ text: shelfPrompt(pin.lines, pin.done), mode: 'insert' })}
+          />
           <Button key="unpin" label="Unpin" onPress={() => update($, pinned, () => null)} />
         </Box>
         {pin.showOriginal && <Markdown text={pin.original} />}
         {!pin.showOriginal &&
-          shown.map(line => {
+          shown.map((line, i) => {
             const { marker, body } = splitMarker(line)
+            const isDone = (pin.done ?? []).includes(i)
 
-            return marker ? (
-              <Box>
-                <Text>{marker} </Text>
+            return (
+              <Box key={`row-${i}`} gap={1}>
+                <Button
+                  key={`tick-${i}`}
+                  plain
+                  label={isDone ? '☑' : '☐'}
+                  onPress={() => update($, pinned, p => (p === null ? p : { ...p, done: toggleDone(p.done, i) }))}
+                />
                 <Box flexShrink={1}>
-                  <Text>{body}</Text>
+                  <Text dimColor={isDone}>{marker ? `${marker} ${body}` : body}</Text>
                 </Box>
               </Box>
-            ) : (
-              <Text>{body}</Text>
             )
           })}
       </Box>

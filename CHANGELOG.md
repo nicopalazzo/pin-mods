@@ -4,6 +4,10 @@ All notable changes to pin-mods. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Added
+
+- `pin` 0.3.0: tick lines off in the band (☐ / ☑), and a "➕ Shelf" button that types "Add these steps to the shelf" with the pinned lines into the prompt, ticked ones marked `[x]`. It needs the Steps shelf plugin; the pin does not read the shelf back, so a tick made on the shelf does not show on the pin.
+
 ### Changed
 
 - `pin` 0.2.0 now holds what `pin-click` did: the "📌 Pin steps" button under replies, "↩ Original", "🔎 Find in chat" and `/pin-goto`, plus step detection for tables. `/pin` keeps the original reply too, so "Original" works for it. It could only reach the last reply before; the button reaches any reply. `pin-click` 0.1.5 is a pointer to `pin` and is no longer listed in the marketplace.

@@ -9,7 +9,9 @@ import {
   linesToPin,
   searchPhrase,
   splitInlineSteps,
+  shelfPrompt,
   splitMarker,
+  toggleDone,
   visibleLines,
 } from './pin-text'
 
@@ -133,4 +135,17 @@ test('a table with no call to action after it stays a table to read', () => {
 
 test('list steps still win over a table', () => {
   expect(linesToPin(`- one\n- two\n\n${ACTION_TABLE}`)).toEqual(['- one', '- two'])
+})
+
+test('ticking a line adds it, ticking it again removes it, and the list stays sorted', () => {
+  expect(toggleDone(undefined, 2)).toEqual([2])
+  expect(toggleDone([2], 0)).toEqual([0, 2])
+  expect(toggleDone([0, 2], 2)).toEqual([0])
+})
+
+test('the shelf sentence marks ticked lines with [x] and the rest with [ ]', () => {
+  expect(shelfPrompt(['1. Book', '2. Invite'], [0])).toBe(
+    'Add these steps to the shelf (the [x] ones are already done):\n[x] 1. Book\n[ ] 2. Invite',
+  )
+  expect(shelfPrompt(['1. Book'], undefined)).toContain('[ ] 1. Book')
 })

@@ -6,6 +6,8 @@ export type Pin = {
   /** The full reply the lines came from ('' when the person typed the text). */
   original: string
   showOriginal: boolean
+  /** Indexes of the lines the person ticked off in the band. */
+  done?: number[]
 }
 
 declare module 'claude-code' {
