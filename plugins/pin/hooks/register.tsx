@@ -211,7 +211,7 @@ export const register: Register = on => {
           <Button
             key="shelf"
             label="➕ Shelf"
-            onPress={() => $.prompt.fill({ text: shelfPrompt(pin.lines, pin.done), mode: 'insert' })}
+            onPress={() => $.prompt.submit({ text: shelfPrompt(pin.lines, pin.done), asUser: true })}
           />
           <Button key="unpin" label="Unpin" onPress={() => update($, pinned, () => null)} />
         </Box>
