@@ -1,5 +1,5 @@
 import { atom, read, update } from 'claude-code'
-import type { Register } from 'claude-code'
+import type { EngineInterface, Register } from 'claude-code'
 
 import type { Pin } from '../types'
 import { layoutLines, linesFromText, linesToPin, splitMarker, visibleLines } from './pin-text'
@@ -7,16 +7,44 @@ import { layoutLines, linesFromText, linesToPin, splitMarker, visibleLines } fro
 const pinned = atom({ plugin: 'pin', key: 'pinned' } as const, null)
 const lastAnswer = atom({ plugin: 'pin', key: 'lastAnswer' } as const, '')
 
+const registerCommands = async ($: EngineInterface) => {
+  await $.command.register({
+    name: 'pin',
+    description: 'Pin the last answer (or the text you type) above the prompt',
+  })
+  await $.command.register({
+    name: 'unpin',
+    description: 'Remove the pinned lines',
+  })
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({
-      name: 'pin',
-      description: 'Pin the last answer (or the text you type) above the prompt',
-    })
-    await $.command.register({
-      name: 'unpin',
-      description: 'Remove the pinned lines',
-    })
+    await registerCommands($)
+
+    return next(e)
+  })
+
+  // /clear and /resume continue under a new session id without a session.start, so the commands vanish.
+  // Register them again once a command has moved the session.
+  on('command.run', async ($, e, next) => {
+    const session = await $.session.id()
+    const result = await next(e)
+
+    if ((await $.session.id()) !== session) {
+      await registerCommands($).catch(() => undefined)
+      await $.ui.log('pin: commands registered again (session id changed after a command)')
+    }
+
+    return result
+  }).catch(($, e, next) => next(e))
+
+  // /clear fires session.end with reason 'clear' and no session.start after it.
+  on('session.end', async ($, e, next) => {
+    if (e.reason === 'clear') {
+      await registerCommands($).catch(() => undefined)
+      await $.ui.log('pin: commands registered again (session.end, clear)')
+    }
 
     return next(e)
   })

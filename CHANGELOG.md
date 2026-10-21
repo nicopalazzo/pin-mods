@@ -2,6 +2,12 @@
 
 All notable changes to pin-mods. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- `pin`: `/pin` and `/unpin` are registered again after `/clear` or `/resume`. They were registered only at session start, so after `/clear` the app answered "/pin isn't a command here". Bumped to 0.1.4. `pin-click` and `pin-ask` have the same flaw, not yet fixed.
+
 ## [0.1.4] - 2026-10-14
 
 ### Fixed
