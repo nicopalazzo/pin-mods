@@ -12,7 +12,7 @@ All notable changes to pin-mods. The format follows [Keep a Changelog](https://k
 
 ### Changed
 
-- `pin` 0.2.0 now holds what `pin-click` did: the "📌 Pin steps" button under replies, "↩ Original", "🔎 Find in chat" and `/pin-goto`, plus step detection for tables. `/pin` keeps the original reply too, so "Original" works for it. It could only reach the last reply before; the button reaches any reply. `pin-click` 0.1.5 is a pointer to `pin` and is no longer listed in the marketplace.
+- `pin` 0.2.0 now holds what `pin-click` did: the "📌 Pin steps" button under replies, "↩ Original", "🔎 Find in chat" and `/pin-goto`, plus step detection for tables. `/pin` keeps the original reply too, so "Original" works for it. It could only reach the last reply before; the button reaches any reply. `pin-click` is removed from the marketplace and from the repository; install `pin` instead.
 - Why: two plugins drew two different bands, and a user could not tell which to use.
 
 ### Fixed

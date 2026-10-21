@@ -31,7 +31,6 @@ Start a new session. `/pin` keeps the last reply's steps, `/pin your text` keeps
 
 | Mod | When to use it |
 |---|---|
-| `pin-click` | Moved into `pin`. It stays one version with a note; use `pin` instead |
 | `pin-ask` | You want Claude to write the checklist: say "pin the steps", then tick lines off |
 
 Only one band shows at a time. Unpin one before trying another.
