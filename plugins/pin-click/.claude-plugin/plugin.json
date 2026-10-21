@@ -1,10 +1,9 @@
 {
   "name": "pin-click",
-  "version": "0.1.4",
-  "description": "Plan B test: a Pin button under every reply that has steps. Click it to keep the steps above the prompt.",
+  "version": "0.1.5",
+  "description": "Moved into pin. Install pin instead: claude plugin install pin@pin-mods",
   "author": {
     "name": "Nicolas Palazzo"
   },
-  "license": "MIT",
-  "types": "./types/index.d.ts"
+  "license": "MIT"
 }

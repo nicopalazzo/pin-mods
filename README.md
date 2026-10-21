@@ -13,24 +13,25 @@ One click keeps them above the prompt while the chat scrolls:
 ## How it went
 
 - I tried Codex first. I got a working demo in a browser, but Codex had no safe place to add it, so it stayed a demo.
-- Claude Code lets a mod draw above the prompt. On 9 Oct I built three versions: a command (`/pin`), a button under replies (pin-click), and a checklist Claude pins when you ask (pin-ask).
+- Claude Code lets a mod draw above the prompt. On 9 Oct I built three versions: a command (`/pin`), a button under replies (pin-click, now merged into `pin`), and a checklist Claude pins when you ask (pin-ask).
 - The button is the one I use. A command is one more thing to remember; the button is just there.
+- On 21 Oct I merged the command and the button into one plugin, `pin`. Two plugins gave two different bands, and `/pin` could only reach the last reply.
 - On 13 Oct the button was missing under a reply where Claude put the plan in a table. Now a table counts too, when the reply ends with a call to action.
 
 Everything stays in your session, on your computer. Nothing is sent anywhere.
 
-## Install pin-click
+## Install
 
     claude plugin marketplace add nicopalazzo/pin-mods
-    claude plugin install pin-click@pin-mods
+    claude plugin install pin@pin-mods
 
-Start a new session. The button appears under replies with a numbered or bulleted list, or with a table followed by a call to action ("Next", "Your turn", ❓, 🎯). In the band: "Original" shows the full reply; "Find in chat" copies a search phrase for the app's find (Cmd+F).
+Start a new session. `/pin` keeps the last reply's steps, `/pin your text` keeps your own, and the button appears under replies with a numbered or bulleted list, or with a table followed by a call to action ("Next", "Your turn", ❓, 🎯). In the band: "Original" shows the full reply; "Find in chat" copies a search phrase for the app's find (Cmd+F).
 
 ## Other ways to pin
 
 | Mod | When to use it |
 |---|---|
-| `pin` | You prefer typing: `/pin` keeps the last reply's steps, `/pin your text` keeps your own |
+| `pin-click` | Moved into `pin`. It stays one version with a note; use `pin` instead |
 | `pin-ask` | You want Claude to write the checklist: say "pin the steps", then tick lines off |
 
 Only one band shows at a time. Unpin one before trying another.

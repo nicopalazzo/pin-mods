@@ -1,7 +1,7 @@
 {
   "name": "pin",
-  "version": "0.1.4",
-  "description": "Keep a few lines of an answer pinned above the prompt while the chat scrolls. /pin, /unpin.",
+  "version": "0.2.0",
+  "description": "Keep steps above the prompt while the chat scrolls: a Pin button under any reply, or /pin. Show the original reply, find it in the chat.",
   "types": "./types/index.d.ts",
   "author": {
     "name": "Nicolas Palazzo"

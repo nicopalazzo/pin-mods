@@ -1,10 +1,9 @@
 {
   "name": "pin-mods",
-  "description": "Three ways to keep a few lines pinned above the prompt in Claude Code: /pin, a Pin button under replies, and a checklist Claude pins on request",
+  "description": "Two ways to keep a few lines pinned above the prompt in Claude Code: /pin and a Pin button under replies (one plugin), and a checklist Claude pins on request",
   "owner": { "name": "Nicolas Palazzo" },
   "plugins": [
-    { "name": "pin", "source": "./plugins/pin", "description": "/pin and /unpin: keep the last answer's steps, or text you type, above the prompt" },
-    { "name": "pin-click", "source": "./plugins/pin-click", "description": "A Pin button under replies that have steps; show the original reply in the band; find it in the chat" },
+    { "name": "pin", "source": "./plugins/pin", "description": "Keep steps above the prompt: a Pin button under replies, /pin and /unpin; show the original reply in the band; find it in the chat" },
     { "name": "pin-ask", "source": "./plugins/pin-ask", "description": "Ask Claude to pin a checklist; tick the lines off in the band" }
   ]
 }

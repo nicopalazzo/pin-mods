@@ -4,9 +4,14 @@ All notable changes to pin-mods. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- `pin` 0.2.0 now holds what `pin-click` did: the "📌 Pin steps" button under replies, "↩ Original", "🔎 Find in chat" and `/pin-goto`, plus step detection for tables. `/pin` keeps the original reply too, so "Original" works for it. It could only reach the last reply before; the button reaches any reply. `pin-click` 0.1.5 is a pointer to `pin` and is no longer listed in the marketplace.
+- Why: two plugins drew two different bands, and a user could not tell which to use.
+
 ### Fixed
 
-- `pin`: `/pin` and `/unpin` are registered again after `/clear` or `/resume`. They were registered only at session start, so after `/clear` the app answered "/pin isn't a command here". Bumped to 0.1.4. `pin-click` and `pin-ask` have the same flaw, not yet fixed.
+- `pin`: `/pin` and `/unpin` are registered again after `/clear` or `/resume`. They were registered only at session start, so after `/clear` the app could answer "/pin isn't a command here". `pin-ask` has the same pattern, not yet fixed.
 
 ## [0.1.4] - 2026-10-14
 
